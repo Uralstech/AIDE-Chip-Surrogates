@@ -5,10 +5,17 @@ This repository contains the complete pipeline for generating, training, validat
 
 Using ~15,000 validated gem5 SE-mode simulations across six workloads, we train monotonicity-constrained XGBoost models that predict IPC and L2 miss rate from cache configuration parameters. The resulting models achieve near-perfect accuracy on held-out data and deliver 800×+ speedups over cycle-accurate simulation on out-of-distribution (OOD) cache configurations.
 
-## Preprint
+## Related Works
 
-Udayshankar Ravikumar . Fast, Explainable Surrogate Models for gem5 Cache Design Space Exploration. Authorea. January 14, 2026.
-https://doi.org/10.22541/au.176843174.46109183/v1
+Preprint:
+> Udayshankar Ravikumar . Fast, Explainable Surrogate Models for gem5 Cache Design Space Exploration. Authorea. January 14, 2026.<br/>
+> <https://doi.org/10.22541/au.176843174.46109183/v1>
+
+Generated 15,000 simulations dataset on HuggingFace:
+> <https://doi.org/10.57967/hf/7538>
+
+Trained model artifacts on HuggingFace:
+> <https://doi.org/10.57967/hf/7539>
 
 ## Repository Structure
 
