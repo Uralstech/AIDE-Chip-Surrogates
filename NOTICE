@@ -5,3 +5,12 @@ This project is accompanied by a peer-reviewed preprint describing its methodolo
 
 Udayshankar Ravikumar . Fast, Explainable Surrogate Models for gem5 Cache Design Space Exploration. Authorea. January 14, 2026.
 https://doi.org/10.22541/au.176843174.46109183/v1
+
+Patent Notice
+
+This project describes techniques and system-level methods related to surrogate-based microarchitectural design-space exploration that are the subject of a pending patent application filed by the author.
+
+The patent application may cover concepts and workflows broader than the specific implementations contained in this repository.
+
+The open-source licenses applied to this project govern copyright only.
+Commercial use of the broader methods or systems described herein may require a separate license.
