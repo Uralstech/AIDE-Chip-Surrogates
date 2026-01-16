@@ -17,6 +17,9 @@ Generated 15,000 simulations dataset on HuggingFace:
 Trained model artifacts on HuggingFace:
 > <https://doi.org/10.57967/hf/7539>
 
+Inference can be performed via the HuggingFace–hosted Space:
+> <https://huggingface.co/spaces/uralstech/AIDE-Chip-Surrogates-Demo>
+
 ## Repository Structure
 
 ```
