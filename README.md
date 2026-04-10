@@ -8,8 +8,8 @@ Using ~15,000 validated gem5 SE-mode simulations across six workloads, we train 
 ## Related Works
 
 Preprint:
-> Udayshankar Ravikumar . Fast, Explainable Surrogate Models for gem5 Cache Design Space Exploration. Authorea. January 14, 2026.<br/>
-> <https://doi.org/10.22541/au.176843174.46109183/v1>
+> The stable version of this manuscript is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.19501193).
+> This version is cross-referenced with the original TechArXiv submission (DOI: https://doi.org/10.22541/au.176843174.46109183/v1).
 
 Generated 15,000 simulations dataset on HuggingFace:
 > <https://doi.org/10.57967/hf/7538>
