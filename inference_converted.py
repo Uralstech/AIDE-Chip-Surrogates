@@ -1,4 +1,4 @@
-import sys, os, json, pandas, numpy, xgboost
+import sys, os, time, json, pandas, numpy, xgboost
 
 MODEL_DIR = "surrogate_models_v2_converted"
 WORKLOADS = {
@@ -38,6 +38,8 @@ FEATURES = [
 ]
 
 def load_models() -> dict[str, (xgboost.XGBRegressor, bool)]:
+    
+    start_time = time.perf_counter()
     models = { }
 
     for workload in WORKLOADS:
@@ -54,6 +56,9 @@ def load_models() -> dict[str, (xgboost.XGBRegressor, bool)]:
                 metadata = json.load(file)
 
             models[model_name] = (regressor, metadata['log_target'])
+
+    elapsed = time.perf_counter() - start_time
+    print(f"⏱️  Model loading time: {elapsed:.3f} sec")
 
     return models
 
@@ -77,6 +82,8 @@ def run_inference(models, input_path, output_path):
     if (missing_cols):
         raise ValueError(f"Missing required columns: {missing_cols}")
     
+    start_time = time.perf_counter()
+
     # -----------------------------
     # Feature Engineering (same as training)
     # -----------------------------
@@ -93,33 +100,55 @@ def run_inference(models, input_path, output_path):
     df["pred_l2_miss_rate"] = numpy.nan
     df["warnings"] = ""
 
-    for idx, row in df.iterrows():
+    # -----------------------------
+    # Batch inference per workload
+    # -----------------------------
+    for workload, group_idx in df.groupby("workload").groups.items():
 
-        workload = row["workload"]
-        X = row[FEATURES].values.reshape(1, -1)
+        if workload not in WORKLOADS:
+            raise ValueError(f"Unknown workload: {workload}")
         
+        X = df.loc[group_idx, FEATURES].values  # shape: (N, num_features)
         preds = {}
-        warn_msgs = []
-        
-        for target in TARGETS:
-            model, is_log_target = models[f"model_{workload}_{target}"]
-            
-            pred_raw = model.predict(X)[0]
-            pred = numpy.expm1(pred_raw) if is_log_target else pred_raw
 
+        for target in TARGETS:
+            
+            model, is_log_target = models[f"model_{workload}_{target}"]
+
+            pred_raw = model.predict(X)
+            pred = numpy.expm1(pred_raw) if is_log_target else pred_raw
+            
             if target == "l2_miss_rate":
                 pred = numpy.clip(pred, 0, 1)
 
-            preds[target] = float(pred)
-            
-        warn_msgs.extend(
-            physical_sanity_check(workload, preds["ipc"], preds["l2_miss_rate"])
-        )
+            preds[target] = pred
 
-        df.at[idx, "pred_ipc"] = preds["ipc"]
-        df.at[idx, "pred_l2_miss_rate"] = preds["l2_miss_rate"]
-        df.at[idx, "warnings"] = "; ".join(warn_msgs)
-        
+        # Assign predictions
+        df.loc[group_idx, "pred_ipc"] = preds["ipc"]
+        df.loc[group_idx, "pred_l2_miss_rate"] = preds["l2_miss_rate"]
+
+        # -----------------------------
+        # Vectorized sanity checks
+        # -----------------------------
+        ipc_vals = preds["ipc"]
+        miss_vals = preds["l2_miss_rate"]
+
+        warnings = numpy.full(len(group_idx), "", dtype=object)
+
+        bad_ipc = (ipc_vals < 0) | (ipc_vals > 3.5)
+        bad_miss = (miss_vals < 0) | (miss_vals > 1)
+
+        warnings[bad_ipc] = [f"IPC={v:.3f} out of physical range" for v in ipc_vals[bad_ipc]]
+        warnings[bad_miss] = [
+            (w + "; " if w else "") + f"L2 miss rate={v:.3f} out of [0,1]"
+            for w, v in zip(warnings[bad_miss], miss_vals[bad_miss])
+        ]
+
+        df.loc[group_idx, "warnings"] = warnings
+
+    elapsed = time.perf_counter() - start_time
+    print(f"⏱️  Total processing time: {elapsed:.3f} sec")
+
     df.to_csv(output_path, index=False)
     print(f"✅ Inference complete. Results saved to: {output_path}")
     
