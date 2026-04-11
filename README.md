@@ -32,8 +32,8 @@ AIDE-CHIP-SURROGATES/
 │   └── run_simulations.py
 ├── train.py                    # Train surrogate models
 ├── inference.py                # Run fast predictions [DEPRECATED, use inference_converted.py instead]
-├── convert.py                  # Utility script used to convert existing pickled models to XGBoost-native binary JSON
-├── inference_converted.py      # Run fast predictions (uses the XGBoost-saved binary JSON models)
+├── convert.py                  # Utility script used to convert existing pickled models to XGBoost-native JSON
+├── inference_v2.py             # Run fast predictions (uses the XGBoost-saved JSON models)
 ├── ood-compare/                # 26-config OOD stress test
 │   ├── predicted_results.csv
 │   ├── simulation_results.csv
@@ -78,7 +78,7 @@ Training time: < 1 minute on CPU
 
 ## Fast Inference
 
-`inference_converted.py`
+`inference_v2.py`
 * Loads all supported surrogates
 * Applies feature engineering for input
 * Produces IPC & L2 miss predictions

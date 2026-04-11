@@ -1,9 +1,9 @@
-# Script used to convert the trained model's pickle files to XGBoost's natively supported binary JSON format
+# Script used to convert the trained model's pickle files to XGBoost's natively supported JSON format
 
 import os, json, joblib, xgboost
 
 IN_MODELS_DIR = "surrogate_models_v2"
-OUT_MODELS_DIR = "surrogate_models_v2_converted"
+OUT_MODELS_DIR = "surrogate_models_v2_json"
 
 os.makedirs(OUT_MODELS_DIR, exist_ok=True)
 
@@ -21,7 +21,7 @@ for file in os.listdir(IN_MODELS_DIR):
     print(f"Converting pickle: {pickle}")
     base_name = file.replace('.pkl', '')
     
-    model_output = os.path.join(OUT_MODELS_DIR, f"{base_name}.ubj")
+    model_output = os.path.join(OUT_MODELS_DIR, f"{base_name}.json")
     model.save_model(model_output)
 
     metadata_output = os.path.join(OUT_MODELS_DIR, f"{base_name}_meta.json")

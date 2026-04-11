@@ -1,6 +1,6 @@
 import sys, os, time, json, pandas, numpy, xgboost
 
-MODEL_DIR = "surrogate_models_v2_converted"
+MODEL_DIR = "surrogate_models_v2_json"
 WORKLOADS = {
     "crc32",
     "dijkstra",
@@ -46,7 +46,7 @@ def load_models() -> dict[str, (xgboost.XGBRegressor, bool)]:
         for target in TARGETS:
             model_name = f"model_{workload}_{target}"
 
-            model_file = os.path.join(MODEL_DIR, f"{model_name}.ubj")
+            model_file = os.path.join(MODEL_DIR, f"{model_name}.json")
             metadata_file = os.path.join(MODEL_DIR, f"{model_name}_meta.json")
 
             regressor = xgboost.XGBRegressor()
